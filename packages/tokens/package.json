@@ -1,0 +1,62 @@
+{
+  "name": "tailwind-plugin-tokens",
+  "type": "module",
+  "version": "3.0.0",
+  "author": {
+    "email": "i@blackcater.dev",
+    "name": "Elon Tang",
+    "url": "https://github.com/blackcater"
+  },
+  "homepage": "htts://github.com/blackcater/tailwind-plugin-tokens",
+  "repository": {
+    "url": "https://github.com/blackcater/tailwind-plugin-tokens.git",
+    "type": "git",
+    "directory": "packages/tokens"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./palettes": {
+      "types": "./dist/palettes/index.d.ts",
+      "import": "./dist/palettes/index.js",
+      "require": "./dist/palettes/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "*.d.ts",
+    "dist"
+  ],
+  "engines": {
+    "node": "^18.0.0 || >=20.0.0"
+  },
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "clean": "rimraf dist"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.0.0"
+  },
+  "dependencies": {
+    "@radix-ui/colors": "^3.0.0",
+    "change-case": "^5.4.4",
+    "color": "^4.2.3"
+  },
+  "devDependencies": {
+    "@types/color": "^3.0.6",
+    "@types/node": "^20.12.8",
+    "rimraf": "^5.0.5",
+    "tailwindcss": "^3.4.3",
+    "tsup": "^8.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
