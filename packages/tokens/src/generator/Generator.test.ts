@@ -18,6 +18,17 @@ describe('generator@Generator', () => {
 
       expect(
         () => new Generator(
+          {},
+          {
+            backgroundColors: {
+              brand: { value: '{colors.red.100}' },
+            },
+          },
+        ),
+      ).toThrowError('Reference not found')
+
+      expect(
+        () => new Generator(
           {
             colors: {
               red: { 100: '#ff0000' },
@@ -25,6 +36,21 @@ describe('generator@Generator', () => {
           },
           {
             colors: {
+              brand: { value: '{colors.red.100}' },
+            },
+          },
+        ),
+      ).not.toThrowError()
+
+      expect(
+        () => new Generator(
+          {
+            colors: {
+              red: { 100: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
               brand: { value: '{colors.red.100}' },
             },
           },
@@ -45,94 +71,166 @@ describe('generator@Generator', () => {
           },
         ),
       ).not.toThrowError()
+
+      expect(
+        () => new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: { value: '{colors.red}' },
+            },
+          },
+        ),
+      ).not.toThrowError()
     })
   })
 
   describe('#themes', () => {
     it('should be return themes', () => {
-      const gen = new Generator(
-        {
-          colors: {
-            red: { DEFAULT: '#ff0000' },
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
           },
-        },
-        {
-          colors: {
-            brand: { value: '{colors.red}', dark: '{colors.red}', custom: '{colors.red}' },
+          {
+            colors: {
+              brand: { value: '{colors.red}', dark: '{colors.red}', custom: '{colors.red}' },
+            },
           },
-        },
-      )
+        )).themes,
+      ).toEqual(['light', 'dark', 'custom'])
 
-      expect(gen.themes).toEqual(['light', 'dark', 'custom'])
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: { value: '{colors.red}', dark: '{colors.red}', custom: '{colors.red}' },
+            },
+          },
+        )).themes,
+      ).toEqual(['light', 'dark', 'custom'])
     })
   })
 
   describe('#variables', () => {
     it('should be return variables', () => {
-      const gen = new Generator(
-        {
-          colors: {
-            red: { DEFAULT: '#ff0000' },
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
           },
-        },
-        {
-          colors: {
-            brand: { value: '{colors.red}' },
+          {
+            colors: {
+              brand: { value: '{colors.red}' },
+            },
           },
-        },
-      )
-
-      expect(gen.variables).toEqual({
+        )).variables,
+      ).toEqual({
         light: {
           '--colors-brand': '#ff0000',
+        },
+      })
+
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: { value: '{colors.red}' },
+            },
+          },
+        )).variables,
+      ).toEqual({
+        light: {
+          '--colors-background-brand': '#ff0000',
         },
       })
     })
 
     it('should be return variables for DEFAULT', () => {
-      const gen = new Generator(
-        {
-          colors: {
-            red: { DEFAULT: '#ff0000' },
-          },
-        },
-        {
-          colors: {
-            brand: {
-              DEFAULT: { value: '{colors.red}' },
-              subtle: { value: '{colors.red}' },
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
             },
           },
-        },
-      )
-
-      expect(gen.variables).toEqual({
+          {
+            colors: {
+              brand: {
+                DEFAULT: { value: '{colors.red}' },
+                subtle: { value: '{colors.red}' },
+              },
+            },
+          },
+        )).variables,
+      ).toEqual({
         light: {
           '--colors-brand': '#ff0000',
           '--colors-brand-subtle': '#ff0000',
         },
       })
+
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: {
+                DEFAULT: { value: '{colors.red}' },
+                subtle: { value: '{colors.red}' },
+              },
+            },
+          },
+        )).variables,
+      ).toEqual({
+        light: {
+          '--colors-background-brand': '#ff0000',
+          '--colors-background-brand-subtle': '#ff0000',
+        },
+      })
     })
 
     it('should be return variables for dark theme', () => {
-      const gen = new Generator(
-        {
-          colors: {
-            red: { DEFAULT: '#ff0000' },
-            green: { DEFAULT: '#00ff00' },
-          },
-        },
-        {
-          colors: {
-            brand: {
-              light: '{colors.green}',
-              dark: '{colors.red}',
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+              green: { DEFAULT: '#00ff00' },
             },
           },
-        },
-      )
-
-      expect(gen.variables).toEqual({
+          {
+            colors: {
+              brand: {
+                light: '{colors.green}',
+                dark: '{colors.red}',
+              },
+            },
+          },
+        )).variables,
+      ).toEqual({
         light: {
           '--colors-brand': '#00ff00',
         },
@@ -140,48 +238,114 @@ describe('generator@Generator', () => {
           '--colors-brand': '#ff0000',
         },
       })
+
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+              green: { DEFAULT: '#00ff00' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: {
+                light: '{colors.green}',
+                dark: '{colors.red}',
+              },
+            },
+          },
+        )).variables,
+      ).toEqual({
+        light: {
+          '--colors-background-brand': '#00ff00',
+        },
+        dark: {
+          '--colors-background-brand': '#ff0000',
+        },
+      })
     })
 
     it('should be return variables for custom prefix', () => {
-      const gen = new Generator(
-        {
-          colors: {
-            red: { DEFAULT: '#ff0000' },
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
           },
-        },
-        {
-          colors: {
-            brand: { value: '{colors.red}' },
+          {
+            colors: {
+              brand: { value: '{colors.red}' },
+            },
           },
-        },
-        { prefix: 'foo' },
-      )
-
-      expect(gen.variables).toEqual({
+          { prefix: 'foo' },
+        )).variables,
+      ).toEqual({
         light: {
           '--foo-colors-brand': '#ff0000',
+        },
+      })
+
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: { value: '{colors.red}' },
+            },
+          },
+          { prefix: 'foo' },
+        )).variables,
+      ).toEqual({
+        light: {
+          '--foo-colors-background-brand': '#ff0000',
         },
       })
     })
 
     it('should be return variables for defaultTheme', () => {
-      const gen = new Generator(
-        {
-          colors: {
-            red: { DEFAULT: '#ff0000' },
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
           },
-        },
-        {
-          colors: {
-            brand: { value: '{colors.red}' },
+          {
+            colors: {
+              brand: { value: '{colors.red}' },
+            },
           },
-        },
-        { defaultTheme: 'dark' },
-      )
-
-      expect(gen.variables).toEqual({
+          { defaultTheme: 'dark' },
+        )).variables,
+      ).toEqual({
         dark: {
           '--colors-brand': '#ff0000',
+        },
+      })
+
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: { value: '{colors.red}' },
+            },
+          },
+          { defaultTheme: 'dark' },
+        )).variables,
+      ).toEqual({
+        dark: {
+          '--colors-background-brand': '#ff0000',
         },
       })
     })
@@ -189,20 +353,40 @@ describe('generator@Generator', () => {
 
   describe('#variants', () => {
     it('should be return variants', () => {
-      const gen = new Generator(
-        {
-          colors: {
-            red: { DEFAULT: '#ff0000' },
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
           },
-        },
-        {
-          colors: {
-            brand: { value: '{colors.red}' },
+          {
+            colors: {
+              brand: { value: '{colors.red}' },
+            },
           },
+        )).variants,
+      ).toEqual([
+        {
+          name: 'light',
+          definition: ['&.light', '&[data-theme=\'light\']'],
         },
-      )
+      ])
 
-      expect(gen.variants).toEqual([
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: { value: '{colors.red}' },
+            },
+          },
+        )).variants,
+      ).toEqual([
         {
           name: 'light',
           definition: ['&.light', '&[data-theme=\'light\']'],
@@ -213,29 +397,49 @@ describe('generator@Generator', () => {
 
   describe('#utilities', () => {
     it('should be return utilities', () => {
-      const gen = new Generator(
-        {
-          colors: {
-            red: { DEFAULT: '#ff0000' },
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
           },
-        },
-        {
-          colors: {
-            brand: { value: '{colors.red}' },
+          {
+            colors: {
+              brand: { value: '{colors.red}' },
+            },
           },
-        },
-      )
-
-      expect(gen.utilities).toEqual({
+        )).utilities,
+      ).toEqual({
         ':root,.light,[data-theme=\'light\']': {
           'color-scheme': 'light',
           '--colors-brand': '255 0 0',
         },
       })
+
+      expect(
+        (new Generator(
+          {
+            colors: {
+              red: { DEFAULT: '#ff0000' },
+            },
+          },
+          {
+            backgroundColors: {
+              brand: { value: '{colors.red}' },
+            },
+          },
+        )).utilities,
+      ).toEqual({
+        ':root,.light,[data-theme=\'light\']': {
+          'color-scheme': 'light',
+          '--colors-background-brand': '255 0 0',
+        },
+      })
     })
 
     it('should be return utilities for dark theme', () => {
-      const gen = new Generator(
+      expect((new Generator(
         {
           colors: {
             red: { DEFAULT: '#ff0000' },
@@ -250,9 +454,7 @@ describe('generator@Generator', () => {
             },
           },
         },
-      )
-
-      expect(gen.utilities).toEqual({
+      )).utilities).toEqual({
         ':root,.light,[data-theme=\'light\']': {
           'color-scheme': 'light',
           '--colors-brand': '0 255 0',
@@ -262,10 +464,36 @@ describe('generator@Generator', () => {
           '--colors-brand': '255 0 0',
         },
       })
+
+      expect((new Generator(
+        {
+          colors: {
+            red: { DEFAULT: '#ff0000' },
+            green: { DEFAULT: '#00ff00' },
+          },
+        },
+        {
+          backgroundColors: {
+            brand: {
+              light: '{colors.green}',
+              dark: '{colors.red}',
+            },
+          },
+        },
+      )).utilities).toEqual({
+        ':root,.light,[data-theme=\'light\']': {
+          'color-scheme': 'light',
+          '--colors-background-brand': '0 255 0',
+        },
+        '.dark,[data-theme=\'dark\']': {
+          'color-scheme': 'dark',
+          '--colors-background-brand': '255 0 0',
+        },
+      })
     })
 
     it('should be return utilities for alpha color', () => {
-      const gen = new Generator(
+      expect(new Generator(
         {
           colors: {
             red: { DEFAULT: 'rgba(255, 0, 0, 0.5)' },
@@ -276,13 +504,30 @@ describe('generator@Generator', () => {
             brand: { value: '{colors.red}' },
           },
         },
-      )
-
-      expect(gen.utilities).toEqual({
+      ).utilities).toEqual({
         ':root,.light,[data-theme=\'light\']': {
           'color-scheme': 'light',
           '--colors-brand': '255 0 0',
           '--colors-brand-opacity': '0.50',
+        },
+      })
+
+      expect(new Generator(
+        {
+          colors: {
+            red: { DEFAULT: 'rgba(255, 0, 0, 0.5)' },
+          },
+        },
+        {
+          backgroundColors: {
+            brand: { value: '{colors.red}' },
+          },
+        },
+      ).utilities).toEqual({
+        ':root,.light,[data-theme=\'light\']': {
+          'color-scheme': 'light',
+          '--colors-background-brand': '255 0 0',
+          '--colors-background-brand-opacity': '0.50',
         },
       })
     })
@@ -290,7 +535,7 @@ describe('generator@Generator', () => {
 
   describe('#tailwindTheme', () => {
     it('should be return tailwind theme', () => {
-      const gen = new Generator(
+      expect((new Generator(
         {
           colors: {
             red: { DEFAULT: '#ff0000' },
@@ -304,13 +549,34 @@ describe('generator@Generator', () => {
             },
           },
         },
-      )
-
-      expect(gen.tailwindTheme).toEqual({
+      )).tailwindTheme).toEqual({
         colors: {
           brand: {
             DEFAULT: 'rgb(var(--colors-brand) / <alpha-value>)',
             subtle: 'rgb(var(--colors-brand-subtle) / <alpha-value>)',
+          },
+        },
+      })
+
+      expect((new Generator(
+        {
+          colors: {
+            red: { DEFAULT: '#ff0000' },
+          },
+        },
+        {
+          backgroundColors: {
+            brand: {
+              DEFAULT: { value: '{colors.red}' },
+              subtle: { value: '{colors.red}' },
+            },
+          },
+        },
+      )).tailwindTheme).toEqual({
+        backgroundColor: {
+          brand: {
+            DEFAULT: 'rgb(var(--colors-background-brand) / <alpha-value>)',
+            subtle: 'rgb(var(--colors-background-brand-subtle) / <alpha-value>)',
           },
         },
       })

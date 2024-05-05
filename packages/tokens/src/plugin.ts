@@ -15,6 +15,7 @@ export function tokens(config: PluginOptions = {}): ReturnType<typeof plugin> {
   } = config
 
   const gen = new Generator(tokens, semanticTokens, { prefix, defaultTheme, defaultThemeClassFn })
+  const genTheme = gen.tailwindTheme
 
   return plugin(({ addUtilities, addVariant }) => {
     addUtilities(gen.utilities)
@@ -23,7 +24,7 @@ export function tokens(config: PluginOptions = {}): ReturnType<typeof plugin> {
   }, overrideTheme
     ? {
         theme: {
-          ...gen.tailwindTheme,
+          colors: genTheme?.colors,
         },
       }
     : {

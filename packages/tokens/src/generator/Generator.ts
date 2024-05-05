@@ -2,7 +2,7 @@ import type { ThemeConfig } from 'tailwindcss/types/config'
 
 import * as cs from 'change-case'
 
-import type { CSSRuleObject, SemanticTokens, Tokens, Variant } from '../types'
+import type { CSSRuleObject, SemanticTokens, TokenDataTypes, Tokens, Variant } from '../types'
 
 import { getAlpha, isColor, toRgb } from '../utils/color'
 import { GeneratorError } from './error'
@@ -128,20 +128,35 @@ export class Generator {
 
   get tailwindTheme(): Partial<ThemeConfig> {
     const theme: Partial<ThemeConfig> = {}
+    const scopeMap: Record<keyof TokenDataTypes, string> = {
+      colors: 'colors',
+      accentColors: 'accentColor',
+      backgroundColors: 'backgroundColor',
+      borderColors: 'borderColor',
+      boxShadowColors: 'boxShadowColor',
+      caretColors: 'caretColor',
+      divideColors: 'divideColor',
+      outlineColors: 'outlineColor',
+      placeholderColors: 'placeholderColor',
+      ringColors: 'ringColor',
+      ringOffsetColors: 'ringOffsetColor',
+      textColors: 'textColor',
+      textDecorationColors: 'textDecorationColor',
+    }
 
-    forInObj(this._semanticTokens, (keyPath, value) => {
+    forInObj(this._semanticTokens, ([scope, ...keyPath], value) => {
       const _rawTheme = keyPath.pop()!
-
       const evalValue = this._evalValue(value)
+      const mappedScope = (scopeMap as any)[scope!] || scope!
 
-      if (!isColor(evalValue)) { setToObj(theme, keyPath.join('.'), evalValue) }
+      if (!isColor(evalValue)) { setToObj(theme, [mappedScope, ...keyPath].join('.'), evalValue) }
       else {
         const alpha = getAlpha(evalValue)
-        const variable = this._keysToVariable([...keyPath])
+        const variable = this._keysToVariable([scope!, ...keyPath])
         if (alpha === 1)
-          setToObj(theme, keyPath.join('.'), `rgb(var(${variable}) / <alpha-value>)`)
+          setToObj(theme, [mappedScope, ...keyPath].join('.'), `rgb(var(${variable}) / <alpha-value>)`)
         else
-          setToObj(theme, keyPath.join('.'), `rgb(var(${variable}) / var(${variable}-opacity))`)
+          setToObj(theme, [mappedScope, ...keyPath].join('.'), `rgb(var(${variable}) / var(${variable}-opacity))`)
       }
     })
 

@@ -24,7 +24,7 @@ export interface TokenDataTypes extends TokenBaseDataTypes {
   ringColors: string
   ringOffsetColors: string
   textColors: string
-  textDecorationColor: string
+  textDecorationColors: string
 }
 
 export type Tokens = {
