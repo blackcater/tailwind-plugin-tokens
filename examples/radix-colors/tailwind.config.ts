@@ -62,6 +62,9 @@ const config: Config = {
           blackA: autoPalette(radix.colors.blackA, radix.colors.blackA),
           whiteA: autoPalette(radix.colors.whiteA, radix.colors.whiteA),
         },
+        boxShadows: {
+          btn: { light: 'red 0px 8px 24px 0px', dark: 'blue 0px 8px 24px 0px' },
+        },
       },
     }),
   ],

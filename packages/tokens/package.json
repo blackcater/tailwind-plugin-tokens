@@ -51,8 +51,8 @@
   },
   "devDependencies": {
     "@types/color": "^3.0.6",
-    "@types/node": "^20.12.8",
-    "rimraf": "^5.0.5",
+    "@types/node": "^20.12.12",
+    "rimraf": "^5.0.7",
     "tailwindcss": "^3.4.3",
     "tsup": "^8.0.2"
   },

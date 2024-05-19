@@ -56,7 +56,7 @@ export class Generator {
   }
 
   private _evalValue(value: string) {
-    const reg = /\{([^\}]+)\}/g
+    const reg = /\{([^}]+)\}/g
     if (!reg.test(value))
       return value
     return value.replace(reg, (_, key: string) => {
@@ -129,6 +129,7 @@ export class Generator {
   get tailwindTheme(): Partial<ThemeConfig> {
     const theme: Partial<ThemeConfig> = {}
     const scopeMap: Record<keyof TokenDataTypes, string> = {
+      // colors
       colors: 'colors',
       accentColors: 'accentColor',
       backgroundColors: 'backgroundColor',
@@ -142,6 +143,9 @@ export class Generator {
       ringOffsetColors: 'ringOffsetColor',
       textColors: 'textColor',
       textDecorationColors: 'textDecorationColor',
+      // shadows
+      boxShadows: 'boxShadow',
+      dropShadows: 'dropShadow',
     }
 
     forInObj(this._semanticTokens, ([scope, ...keyPath], value) => {
@@ -149,7 +153,10 @@ export class Generator {
       const evalValue = this._evalValue(value)
       const mappedScope = (scopeMap as any)[scope!] || scope!
 
-      if (!isColor(evalValue)) { setToObj(theme, [mappedScope, ...keyPath].join('.'), evalValue) }
+      if (!isColor(evalValue)) {
+        const variable = this._keysToVariable([scope!, ...keyPath])
+        setToObj(theme, [mappedScope, ...keyPath].join('.'), `var(${variable})`)
+      }
       else {
         const alpha = getAlpha(evalValue)
         const variable = this._keysToVariable([scope!, ...keyPath])

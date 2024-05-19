@@ -8,11 +8,11 @@ export interface RecursiveKeyValuePair<K extends keyof any = string, V = string>
 
 export type CSSRuleObject = RecursiveKeyValuePair<string, null | string | string[]>
 
-export interface TokenBaseDataTypes {
+export interface TokenBasColorseDataTypes {
   colors: string
 }
 
-export interface TokenDataTypes extends TokenBaseDataTypes {
+export interface TokenColorsDataTypes extends TokenBasColorseDataTypes {
   accentColors: string
   backgroundColors: string
   borderColors: string
@@ -27,12 +27,21 @@ export interface TokenDataTypes extends TokenBaseDataTypes {
   textDecorationColors: string
 }
 
+export interface TokenShadowsDataTypes {
+  boxShadows: string
+  dropShadows: string
+}
+
+export type TokenDataTypes = TokenColorsDataTypes & TokenShadowsDataTypes
+
 export type Tokens = {
-  [key in keyof TokenBaseDataTypes]?: Recursive<Token<TokenBaseDataTypes[key]>>
+  [key in keyof TokenBasColorseDataTypes]?: Recursive<Token<TokenBasColorseDataTypes[key]>>
 }
 
 export type SemanticTokens = {
-  [key in keyof TokenDataTypes]?: Recursive<SemanticToken<TokenDataTypes[key]>>
+  [key in keyof TokenColorsDataTypes]?: Recursive<SemanticToken<TokenColorsDataTypes[key]>>
+} & {
+  [key in keyof TokenShadowsDataTypes]?: Record<string, SemanticToken<TokenShadowsDataTypes[key]>>
 }
 
 export type Token<Value = any> = {

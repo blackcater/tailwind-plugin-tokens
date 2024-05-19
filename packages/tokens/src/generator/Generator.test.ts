@@ -3,6 +3,11 @@ import { describe, expect, it } from 'vitest'
 import { Generator } from './Generator'
 
 describe('generator@Generator', () => {
+  const shadows = [
+    '0 1px 0 0 rgb(0, 0, 0 / 0.1)',
+    '0 2px 0 0 rgb(255, 255, 255 / 0.3)',
+  ]
+
   describe('#Constructor', () => {
     it('should be validate reference in semantic tokens', () => {
       expect(
@@ -116,6 +121,21 @@ describe('generator@Generator', () => {
           {
             backgroundColors: {
               brand: { value: '{colors.red}', dark: '{colors.red}', custom: '{colors.red}' },
+            },
+          },
+        )).themes,
+      ).toEqual(['light', 'dark', 'custom'])
+
+      expect(
+        (new Generator(
+          {},
+          {
+            dropShadows: {
+              sm: {
+                value: shadows[0],
+                dark: shadows[1],
+                custom: shadows[0],
+              },
             },
           },
         )).themes,
@@ -349,6 +369,23 @@ describe('generator@Generator', () => {
         },
       })
     })
+
+    it('should be return variables for shadows', () => {
+      expect(
+        (new Generator(
+          {},
+          {
+            boxShadows: {
+              sm: { value: shadows[0] },
+            },
+          },
+        )).variables,
+      ).toEqual({
+        light: {
+          '--shadows-box-sm': shadows[0],
+        },
+      })
+    })
   })
 
   describe('#variants', () => {
@@ -531,6 +568,40 @@ describe('generator@Generator', () => {
         },
       })
     })
+
+    it('should be return utilities for shadows', () => {
+      expect(
+        (new Generator(
+          {},
+          {
+            boxShadows: {
+              sm: { value: shadows[0] },
+            },
+          },
+        )).utilities,
+      ).toEqual({
+        ':root,.light,[data-theme=\'light\']': {
+          'color-scheme': 'light',
+          '--shadows-box-sm': shadows[0],
+        },
+      })
+
+      expect(
+        (new Generator(
+          {},
+          {
+            dropShadows: {
+              sm: { value: shadows[0] },
+            },
+          },
+        )).utilities,
+      ).toEqual({
+        ':root,.light,[data-theme=\'light\']': {
+          'color-scheme': 'light',
+          '--shadows-drop-sm': shadows[0],
+        },
+      })
+    })
   })
 
   describe('#tailwindTheme', () => {
@@ -578,6 +649,21 @@ describe('generator@Generator', () => {
             DEFAULT: 'rgb(var(--colors-background-brand) / <alpha-value>)',
             subtle: 'rgb(var(--colors-background-brand-subtle) / <alpha-value>)',
           },
+        },
+      })
+    })
+
+    it('should be return tailwind theme for shadows', () => {
+      expect((new Generator(
+        {},
+        {
+          boxShadows: {
+            sm: { light: shadows[0], dark: shadows[1] },
+          },
+        },
+      )).tailwindTheme).toEqual({
+        boxShadow: {
+          sm: 'var(--shadows-box-sm)',
         },
       })
     })
