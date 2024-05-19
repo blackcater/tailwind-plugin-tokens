@@ -39,7 +39,8 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "release": "release-it"
   },
   "peerDependencies": {
     "tailwindcss": "^3.0.0"
@@ -52,6 +53,7 @@
   "devDependencies": {
     "@types/color": "^3.0.6",
     "@types/node": "^20.12.12",
+    "release-it": "^17.2.1",
     "rimraf": "^5.0.7",
     "tailwindcss": "^3.4.3",
     "tsup": "^8.0.2"
