@@ -113,17 +113,34 @@ export class Generator {
 
       // add variables
       for (const [variable, value] of Object.entries(variables)) {
-        if (!isColor(value)) { (utilities[cssSelector] as any)[variable] = value }
+        if (!isColor(value)) {
+          (utilities[cssSelector] as any)[variable] = value
+        }
         else {
           const alpha = getAlpha(value)
           if (alpha < 1)
-            (utilities[cssSelector] as any)[`${variable}-opacity`] = alpha.toFixed(2);
+            (utilities[cssSelector] as any)[`${variable}-opacity`] = alpha.toFixed(2)
+          else if (this.isAlphaExists(variable))
+            (utilities[cssSelector] as any)[`${variable}-opacity`] = '1';
+
           (utilities[cssSelector] as any)[variable] = toRgb(value)
         }
       }
     }
 
     return utilities
+  }
+
+  isAlphaExists(variable: string) {
+    for (const theme of this.themes) {
+      const variables = this._variables[theme] || {}
+      if (!variables[variable])
+        continue
+      const color = variables[variable]
+      if (isColor(color) && getAlpha(color) < 1)
+        return true
+    }
+    return false
   }
 
   get tailwindTheme(): Partial<ThemeConfig> {

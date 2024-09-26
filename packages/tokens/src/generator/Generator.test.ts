@@ -569,6 +569,28 @@ describe('generator@Generator', () => {
       })
     })
 
+    it('should be return utilities for complex alpha color', () => {
+      expect(new Generator(
+        {},
+        {
+          colors: {
+            border: { value: '#fefefe', dark: 'rgba(0, 0, 0, 0.1)' },
+          },
+        },
+      ).utilities).toEqual({
+        '.dark,[data-theme=\'dark\']': {
+          '--colors-border': '0 0 0',
+          '--colors-border-opacity': '0.10',
+          'color-scheme': 'dark',
+        },
+        ':root,.light,[data-theme=\'light\']': {
+          '--colors-border': '254 254 254',
+          '--colors-border-opacity': '1',
+          'color-scheme': 'light',
+        },
+      })
+    })
+
     it('should be return utilities for shadows', () => {
       expect(
         (new Generator(
